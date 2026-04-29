@@ -1,44 +1,91 @@
+# OpenPAVE Deck Skill
+# Generate beautiful C&R-branded HTML presentation decks from an explicit slide DSL.
+
 name: deck
-description: Generate beautiful C&R-branded HTML presentation decks from an explicit slide DSL. The calling LLM picks a slide type per slide; the skill is a pure renderer with ~15 slide types across C&R light and PAVE dark themes.
-version: 1.0.0
+version: 1.0.1
+description: Generate beautiful C&R-branded HTML presentation decks from an explicit slide DSL. ~15 slide types across C&R light and PAVE dark themes.
 category: design
-author: cnrai
 
+author:
+  name: cnrai
+  url: https://github.com/cnrai
+
+license: MIT
+homepage: https://github.com/cnrai/openpave-deck
+repository: cnrai/openpave-deck
+
+# Execution pattern
+pattern: sandbox
+entrypoint: index.js
+
+# LLM Usage Instructions
+usage_notes: |
+  IMPORTANT FOR AI AGENTS:
+
+  This skill is a PURE RENDERER. The calling LLM picks an explicit slide type
+  per slide. There is no auto-detection or auto-pagination.
+
+  AUTHORING RULES (when turning a paper into a deck):
+  1. Read the source paper end-to-end first (use dropbox_read for Paper docs).
+     Confirm the URL/path with the user — there are often multiple versions.
+  2. Map paper sections 1:1 to slides, in order. Don't reorder.
+  3. Every fact, number, and bullet must trace to a line in the paper.
+     No invented stats, fabricated quotes, or made-up credentials.
+  4. Shorten, don't expand. A 7-row table → 7 short bullets, not 4 + 3 invented.
+  5. Design every slide. Pick the slide type that matches the content shape:
+     3 items → feature-grid; before/after → compare; phases → process-steps.
+  6. PAVE-themed slides ONLY for PAVE-specific content. Anti-fraud, pricing,
+     architecture etc. should use C&R themes. Don't sprinkle PAVE for variety.
+  7. Cluster theme switches. One contiguous PAVE block, not scattered.
+
+  GRID SIZING:
+  - feature-grid supports 3, 4, 5, or 6 cards (single row, no orphans)
+  - stats-grid: max 4 stats
+  - pricing-table: max 8 rows
+  - compare and process-steps need `theme: cnr` to stay light
+
+  DSL SYNTAX:
+  Front-matter (@title, @client, @contact-name, @contact-email) followed by
+  blocks like:
+
+    ::: slide type=split
+    kicker: Section Label
+    title: Headline with <em>accent</em>
+    body: One short paragraph.
+    bullets:
+      - <strong>Lead</strong> — terse phrase
+    variant: blue
+    big-number: 200k
+    big-icon: hk-dollar-sign
+    big-label: HKD · Phase 1
+    :::
+
+  See SKILL.md in the repo for full slide type reference.
+
+# Available commands
 commands:
-  generate:
-    description: Generate a 1920x1080 HTML deck from a deck DSL file. See SKILL.md for DSL syntax — front-matter @keys plus `::: slide type=<type>` blocks. Stay true to the source, don't fabricate, follow paper section order.
-    parameters:
-      - name: input
-        description: Path to a deck DSL markdown file. Author this from the source paper following the rules in SKILL.md (one slide per paper section, no fabrication, shorten don't expand).
-        required: true
-      - name: output-dir
-        description: Output directory for the deck. Default = `<input-dir>/<slugified-title>-deck/`.
-        required: false
-      - name: client
-        description: Client name shown on title and chrome (e.g. "Towngas"). Overrides @client in front-matter.
-        required: false
-      - name: client-logo
-        description: Path to a client logo PNG. When provided, the chrome shows the logo only (never logo + text duplicated).
-        required: false
-      - name: contact-name
-        description: Contact name on closing thank-you slide. Default = "Anne So".
-        required: false
-      - name: contact-email
-        description: Contact email on closing slide. Default = "anne.so@candrholdings.com".
-        required: false
+  - name: generate
+    description: Generate a 1920x1080 HTML deck from a slide DSL markdown file
+    args:
+      - "<input>"
+    options:
+      - --output-dir <dir>
+      - --client <name>
+      - --client-logo <path>
+      - --contact-name <name>
+      - --contact-email <email>
+    examples:
+      - 'generate /tmp/deck.md --client "Acme" --client-logo /tmp/acme-logo.png'
+      - 'generate proposal.md --output-dir ./build'
 
-  fetch-logo:
-    description: Find a client logo on the web (homepage scrape with favicon fallback).
-    parameters:
-      - name: client
-        description: Client name (used in alt text and as a fallback search term).
-        required: true
-      - name: domain
-        description: Client domain (e.g. `acme.com`). Strongly recommended for accuracy.
-        required: false
-      - name: output
-        description: Output path for the PNG. Default = `<client-slug>-logo.png` in cwd.
-        required: false
+  - name: fetch-logo
+    description: Find a client logo on the web (homepage scrape with favicon fallback)
+    options:
+      - --client <name>
+      - --domain <example.com>
+      - --output <path>
+    examples:
+      - 'fetch-logo --client "Acme" --domain acme.com --output /tmp/acme-logo.png'
 
-  list-themes:
-    description: Show available themes (cnr / pave) and per-slide-type theme defaults.
+  - name: list-themes
+    description: Show available themes (cnr / pave) and per-slide-type theme defaults
