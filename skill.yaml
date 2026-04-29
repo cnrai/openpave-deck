@@ -1,0 +1,44 @@
+name: deck
+description: Generate beautiful C&R-branded HTML presentation decks from an explicit slide DSL. The calling LLM picks a slide type per slide; the skill is a pure renderer with ~15 slide types across C&R light and PAVE dark themes.
+version: 1.0.0
+category: design
+author: cnrai
+
+commands:
+  generate:
+    description: Generate a 1920x1080 HTML deck from a deck DSL file. See SKILL.md for DSL syntax — front-matter @keys plus `::: slide type=<type>` blocks. Stay true to the source, don't fabricate, follow paper section order.
+    parameters:
+      - name: input
+        description: Path to a deck DSL markdown file. Author this from the source paper following the rules in SKILL.md (one slide per paper section, no fabrication, shorten don't expand).
+        required: true
+      - name: output-dir
+        description: Output directory for the deck. Default = `<input-dir>/<slugified-title>-deck/`.
+        required: false
+      - name: client
+        description: Client name shown on title and chrome (e.g. "Towngas"). Overrides @client in front-matter.
+        required: false
+      - name: client-logo
+        description: Path to a client logo PNG. When provided, the chrome shows the logo only (never logo + text duplicated).
+        required: false
+      - name: contact-name
+        description: Contact name on closing thank-you slide. Default = "Anne So".
+        required: false
+      - name: contact-email
+        description: Contact email on closing slide. Default = "anne.so@candrholdings.com".
+        required: false
+
+  fetch-logo:
+    description: Find a client logo on the web (homepage scrape with favicon fallback).
+    parameters:
+      - name: client
+        description: Client name (used in alt text and as a fallback search term).
+        required: true
+      - name: domain
+        description: Client domain (e.g. `acme.com`). Strongly recommended for accuracy.
+        required: false
+      - name: output
+        description: Output path for the PNG. Default = `<client-slug>-logo.png` in cwd.
+        required: false
+
+  list-themes:
+    description: Show available themes (cnr / pave) and per-slide-type theme defaults.

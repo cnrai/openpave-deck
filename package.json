@@ -1,0 +1,17 @@
+{
+  "name": "openpave-deck",
+  "version": "1.0.0",
+  "description": "Generate beautiful C&R-branded HTML presentation decks from a Dropbox Paper or markdown file. Auto-detects PAVE sections and applies the PAVE dark theme.",
+  "main": "index.js",
+  "bin": {
+    "openpave-deck": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "dependencies": {}
+}
