@@ -2,8 +2,8 @@
 # Generate beautiful C&R-branded HTML presentation decks from an explicit slide DSL.
 
 name: deck
-version: 1.0.1
-description: Generate beautiful C&R-branded HTML presentation decks from an explicit slide DSL. ~15 slide types across C&R light and PAVE dark themes.
+version: 1.0.2
+description: "Generate beautiful C&R-branded HTML presentation decks from an explicit slide DSL. ~15 slide types across C&R light and PAVE dark themes."
 category: design
 
 author:
